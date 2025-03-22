@@ -2071,7 +2071,853 @@ https : This is secured traffic ( data in transit or flight is encrypted) port 4
 
 In aws we have a service called AWS Certificate Manager ( ACM ) and we will use this to encrypt our load balancer on port 443 which is https .
 
+Group 
 
+Names 
+
+Steph  :  Canada 
+Mr Divine : Canada 
+Scotlinda : Canada 
+Veron : USA 
+Frank : USA
+Dezii : Canada
+Fabrice : Canada
+Yvonne : USA (Maryland)
+Nash : USA
+Ronald : CANADA
+
+
+Group A 
+
++ Steph      -> Teamlead 
++ Mr Divine  -> Assistant Lead 
++ Dezii 
++ Nash 
++ Fabrice
++ Maurice 
+
+
+$90,000 devops 
+
+120,000 - 130.000 
+
+2900 x 8
+
+140,000
+130,000
+120.000
+
+Group B 
+
++ Scotlinda -> Assistant lead 
++ Veron 
++ Ronald 
++ Frank -> Teamlead 
++ Yvonne
++ Srijana
+
+
+
+
+brew install git 
+
+git clone https://github.com/Team4techsolutions-Class8/Notes.git
+
+make sure you have git installed 
+
+
+
+
+2. ## Network Load Balancer (Layer 4 )
+
++ Network load balancers are designed for TCP ,UDP and TLS traffic 
+TCP: Transmission Control Protocol (IP network)
+UDP: User Datagram Protocol 
+TSL: Transport Layer Security 
+
++ Network load balancer operates at layer 4 which offers high perfomance & low latency 
++ Network load balancers often provide a static IP address or a set of IP addresses that remain constant, which can be beneficial for applications that require predictable IP addresses. 
++ Network load balancers offers high perfomance because it operates at a lower layer and handles fewer data processing tasks compared to application-layer load balancers, NLBs typically offer lower latency and higher throughput.
++ Network Loadbalancers performs health checks on targets to ensure that traffic is only sent to healthy instances. These health checks are typically based on TCP connectivity.
++ Network loadbalancers are good for Streaming applications , VOIP ,Video Games 
+
+
+3. **Gateway Load Balancer (Layer 3)**
++ Its designed to work at layer 3 which is the network layer OSI model
++ It has a single entry point .Provides a single entry point for inbound traffic, simplifying network architecture and reducing the number of routing configurations.
++ It also supports healths check for the virtual instances to ensure traffic is sent to healthy instances 
++ Your target has a deployed Virtual Appliances ( EC2 Or a Third party service )
+e.g Firewalls , Intrustion Detection , Prevention systems , Deep Packet inspections 
+
+
+
+
+**Sticky Sessions (Session Affinity)** : 
+
+This is a feature in load balancing where a load balancer ensures that a client or customer is consistently being routed to the same backend server he accessed for a specific period of time or during his or her session on the website 
+
++ This works with Classic , Application and Network Loadbalancers
++ This feature uses cookie and cookie for each session has an expiration date you can control
++ This is good for stateful applications (stateful applications are applications that uses a database) and this helps users not to lose session data . 
++ Sticky sessions on your load balancers can pose a Limitation for load balancing .we distribute load across multiple backend servers to avoid loading one server too much but with the sticky session configured this can kill the purpose of load balancing . 
+
+**How to setup sticky session**
+
++ Click on Target Groups and under target groups select the target you want 
++ Under attributes click on edit attributes 
++ Choose the stickeness type (`Load balancer generated cookie or Application-based cookie` )
+
+
+
+**How Sticky Sessions Work**
+
++ *Session Identification*: The load balancer identifies and tracks client sessions, usually by using a session cookie, a URL parameter, or another method.
+
++ *Consistent Routing*: Once a client is assigned to a backend server (ec2 instance), subsequent requests from the same client are routed to the same server for the duration of the session our example is 1 mins 
+
++ *Session Data*: This is particularly useful for applications that store session data locally on the server. Without sticky sessions, the client’s requests might be distributed across different servers, which could lead to inconsistent experiences if session data is not shared or synchronized.
+
+
+**Common Methods for Sticky Sessions**
+
++ *Cookie-Based Sticky Sessions*: The load balancer inserts a special cookie into the client’s browser. This cookie identifies the server to which the client is assigned. On subsequent requests, the client sends the cookie back to the load balancer, which uses it to route traffic to the same server.
+
+
++ *IP Hashing*: The load balancer uses the client’s IP address to determine which server to route the request to. This method is simpler but less flexible and can lead to issues if clients share IP addresses or change IPs frequently.
+
++ *URL Parameter*: A unique identifier is included in the URL of each request, and the load balancer uses this identifier to route the request to the appropriate server.
+
+**WHY SHOULD WE USE STICKY SESSIONS IN LOADBALANCING ?**  
+
+1. *Stateful Applications* (An application with a database): Ensures that clients interact with the same server throughout their session, which is essential for applications that maintain state or session-specific information on the server.
+
+2. **Improved Performance* : Reduces the overhead of reloading session data from a shared store or database, which can improve application performance and responsiveness.
+
+3. **Consistency*: Provides a consistent user experience by ensuring that all requests within a session are handled by the same server.
+
+
+
+
+**CROSS ZONE LOAD BALANCING** 
+
+This is when your load balancer distributes traffic to your application across multiple AZ(Aavailability zones) within an AWS region
+
++ By default application load balancers will route traffic across multiple availability zones with no charge . 
++ By Default network loadbalancer comes with cross zone load balancing disabled but you can enable it and you will be charge data transfer moving across different AZ's 
++ Classic load balancers by default cross zone load balancing is disabled , if you enable it you wont be charge . 
+
+##############################################
+**AWS Load Balancers ROUTING POLICY OR RULES** 
+##################################################
+
+A routing policy is a feature you can set that will determined how incoming request (traffic) are distributed among your endpoints (targets e.g EC2 INSTANCES). In aws there are several routing policies you can configured for both application , network and classic load balancers 
+
+Application Load Balancers routing policies  : 
+
++ Path-based routing 
++ Host-based routing 
++ Query string or http header 
++ http request method 
++ Sourceip 
+
+
+
+
+
+1. **Path Based routing** : 
+
+Path-based routing allows you to direct traffic to different target groups based on the specific URL path. This is particularly useful in microservices architectures where different services are exposed under different paths. For example:
+Requests to /api might be routed to a target group running your API services.
+Requests to /admin might be routed to a target group handling administrative functions.
+
+**How to setup**
+
+Setup:
+
+AWS Application Load Balancer (ALB):
+Navigate to ALB in the AWS Console:
+
++ Go to the AWS Management Console and open the EC2 service.
++ Under "Load Balancing," select "Load Balancers."
++ Choose your Application Load Balancer from the list.
++ tO Configure the Listener:
+
+Select the "Listeners" tab and click on "View/Edit rules" for the listener you want to configure (usually the HTTP or HTTPS listener).
+Add a Rule for Path-based Routing:
+
++ Click on the "+" button to add a new rule.
++ Choose "Add condition" and select "Path" from the dropdown menu.
++ Enter the path pattern you want to match (e.g., /api/* for API requests or /admin/* for admin requests).
++ Add another condition if needed (e.g., combining path with HTTP methods).
+
+Under the "Then" section, choose the action "Forward to" and select the appropriate target group for the matched path.
+Repeat the process for each path you want to route to different target groups.
+Save the Rules:
+
+Save the configuration and ensure the listener rules are in the correct order since ALB processes rules in a top-down manner.
+
+
+
+
+**Host Based Routing** (`Host header routing rule` )
+
+Host-based routing directs traffic based on the hostname specified in the HTTP request. This is useful when hosting multiple services or applications on the same load balancer but under different subdomains or hostnames. For example:
+app.example.com might route to your main application.admin.example.com might route to your admin panel.
+
+
+
+
+**QUERY STRINGS** :  This is a load balancer routing rule you can set based on query parameters . e.g you can set a query string like 
+categories=men .   http:shop.team4techsolutions.com/?categories=men 
+
+Question ?
+What are the priority numbers use for ? and which is of them is the highest priority ?
+
++ You can configure different routing rules with different priorities .a single a load balancer can have many routing rules as possible.
+Now if the load balancer is receiving so much traffic which of the traffic should it route to the backend server first . 
+
+Developers are going design applications using different architetures (Condo + Building , House (town house , detach houses)
+
+Monoliqthe architecture . micro service / backend ---clothes 
+
+                                                     asychronous communication 
+full software :   webpage has all types (women , men , kids )--->   api --->   shopping cart (software)
+
+
+**HTTP Header** 
+
+Routing based on HTTP request headers is useful when you need to direct traffic based on specific header values. For instance, you might want to route traffic differently based on the user's location, device type, or other metadata passed in the headers.
+
+**How to Set Up**
+
++ Go to your Application Load Balancer settings.
++ Under "Listeners," edit the rules for your listener.
++ Add a condition using "HTTP header."
++ Specify the header name (e.g., User-Agent) and the value you want to match (e.g., mobile).
++ Assign the request to the appropriate target group based on the header condition.
++ Save your changes.
+
+**Testing:**
+
++ To test install curl  (Mac use `brew install curl`) if you dont have brew then you can install brew using the command `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+
++ Use a tool like Postman or cURL to send an HTTP request with the specific header.
++ Verify that the request is routed to the correct target group.
++ run the following command but make sure to change the "agent: agent" to your headers `curl -H "agent: agent" myapploadbalancer-114619576.ca-central-1.elb.amazonaws.com`  
+
+
+
+
+
+**HEALTH CHECKS IN LOAD BALANCERS** 
+
+
+
+Path-based routing 
+
+http request method 
+http header 
+
+9:25 pm est 
+
+
+*.team4techsolutionsinc.com
+
+app.team4techsolutionsinc.com
+app4.team4techsolutionsinc.com
+web.team4techsolutionsinc.com
+
+
+
+
+
+**HEALTH CHECKS IN LOAD BALANCERS** 
+
+This is when your load balancer uses the ping mechanism to check your backend servers (target groups) to make sure they are working properly before it routes traffic to it 
+
+
+**Understanding Load balancers health checks**
+
+1. **Health Check Configurations** 
+
++ This are configured at the target group level within the load balancer
++ You can specify the protocol type e.g HTTP , HTTPS , TCP 
+
+
+2. Health Check Path : 
+
+This is the specific endpoint path or url that your load balancer pings to determined weather the target (ec2 instance) is heathy and is able to handle or receive incoming request . 
+/ : this is the default path and it uses the root (/) to test but you can set your own custom path e.g 
+/health /healthcheck 
+
+3. Health Check port : by default load balancer carries out its health check using the target port configured for your application . you can change or overide this by using your own custom port 
+
+Target : 80 application port 
+application webserver : 80 
+jenkins listen : 8080 
+sonarqube listen ; 9000
+nexus listen : 8081 
+
+4. UnHealthy threshold: This is the number of times your load balancer is going to ping your backend servers (targets) before it determines or mark the target as unhealthy . 
+
+5. Timeout : this is the period of time your load balancer will wait for a response before it marks the target as unhealthy 
+
+6. Interval
+
+
+
+**Trust store :**  
+
+A trust store is a repository that contains trusted certificates, usually public certificates of Certificate Authorities (CAs), that are used to verify the authenticity of the certificates presented by remote servers or clients.
+
+*Purpose / Use case* : The trust store ensures that only certificates signed by trusted CAs(Certificate Authority) are accepted, thereby establishing a secure connection between the client and the server.
+
+
+
+
+# AUTO SCALING GROUPS 
+ 
+This is a feature in aws where you can automatically adjust the number of compute resources such as virtual machines or ec2 instances based on demand .This is to help ensure that there is high availabilty of your application 
++ You can increase & decrease based on demand. when you are increasing we term it scaling out and when you decreasing the demand we term it scaling in . 
+
+
+**Horizontal Scaling* : This is when you add more resources for e.g more ec2 instances if demand is high 
+**Vertifical scaling* : This is when you increase existing resource capacity to accomodate the increase in demand . e.g EBS volume increase from 30 to 50MB ,instance type change etc 
+
+
+Auto scaling groups implement what we call Horizontal Scaling 
+
+
+
+**Other Services in AWS that have auto-scaling capabilities** 
+
+- EC2 : Elastic Compute  ( it adjust the number of ec2 instances )
+- ECS : Elastic Container service  ( supports auto scaling at task level)
+- EKS : Elastick Kubernetes Service : (Horizonal Pod and Cluster Autoscaling )
+- AWS Lambda : it will auto-scale the number of lambda function executions in response incoming event rate 
+- Dynamodb Database ( automatically adjust read and write capacity )
+- RDS ( Relational Database Service) : (Utilizs autos scaling read replicas for Aurora DB cluster)
+
+our focus is on EC2 INSTANCE Auto scaling 
+
+
+
+**AUTO SCALING GROUP (EC2-INSTANCE )**
+
+This is a logical grouping of your ec2-instances managed by aws to be to scale in and out when there is demand. In your auto scaling group you can setup Minimum , maximum and desired number of instances in the group . 
+With this setup you want to make sure the number of instances running can handle the load ,so the auto scaling group will scale up and down to handle incoming request and traffic 
+
+
+
+**Benefits of Auto-Scaling** 
+
++ You can automatically scale without any manual intervention which reduces operational overhead . 
++ It helps in reducing cost because without an auto-scaling you will provisioned the number of serves ahead of time and you can over provisioned which will cost you more money but with auto scaling you only pay for what you need .
++ It makes your application highly available. Since your application servers can scale horizontally it means your application will respond to incoming traffic or request at all time without any errors . 
++ It enhances fault tolerance or automatic recovery .Auto scaling detects when an ec2 instance receiving traffic is unhealthy and will automatically replace the instance by creating another instance 
++ Auto scaling has flexibility and adaptability because it has different types of scaling policies for e.g predictive , dynamic and scheduled) which allow you to setup auto scaling for your application based on your specific needs . 
+
+
+
+
+
+
+`To create an Auto scaling group you need a Launch Template` . 
+
+`What is a Launch Template ?` 
+
+**Launch Template** This is a resource in aws that `contains configuration information` needed to launch an EC2 instance. It enables you to define and manage the necessary settings for launching your instance in a more flexible manner . 
+
+**Difference between Launch Template and AMI ?** 
+
+| **Aspect**             | **Launch Template**                                               | **Amazon Machine Image (AMI)**                                    |
+|------------------------|-------------------------------------------------------------------|-------------------------------------------------------------------|
+| **Purpose**            | A blueprint that defines configuration settings needed to launch an EC2 instance, including AMI ID, instance type, key pair, security groups, and more. | A pre-configured template that includes the operating system, application software, and other necessary configurations required to launch an EC2 instance. |
+| **Scope**              | Covers a wide range of instance configuration settings including which AMI to use, instance type, user data, and security settings. | Specifically defines the software configuration (OS, installed applications, etc.) and the storage settings for the root volume of the instance. |
+| **Versioning**         | Supports versioning, allowing multiple versions of a Launch Template to be created and managed. | Does not support versioning. Each AMI is unique, and a new AMI must be created if changes are needed. |
+| **Customization**      | Can be customized to override certain settings at launch time, such as instance type or AMI, without creating a new template. | AMIs are immutable; you need to create a new AMI if you want to change the software configuration or update the OS. |
+| **Integration**        | Used by services like Auto Scaling, Spot Instances, and EC2 Fleet to ensure consistent and flexible instance launches. | Used within Launch Templates, EC2 instance launches, Auto Scaling configurations, etc., as the base image for the instance's operating system and applications. |
+| **Content**            | Contains a reference to an AMI, along with other settings like instance type, security groups, IAM roles, user data, etc. | Contains the complete machine image, including the operating system, installed applications, and all necessary configurations to run an instance. |
+| **Flexibility**        | Allows for greater flexibility and reusability. You can change instance-specific settings without needing to create a new template. | Limited to defining the software stack. Flexibility comes from creating new AMIs with the desired software or configuration. |
+
+
+**Advantages of a Launch Template**
+
++ When you use a launch template to create ec2 instances this means there consistency with configurations across different env or instances .
++ This simplifies the creation of new ec2 instances . Eliminates manual configurations
++ it supports version control which means you can easily roll back to a version if there was any issues with your new version 
++ You can integrate launch templates with auto scaling to create new instances faster 
++ Reusable because you can create multiple instances using the same launch template and with the same settings. 
++ Also in cost optimization.Your launch template allows you define the instance purchasing options e.g on demand , spot instance . you can also specify the instance type .
+
+
+`We also need an AMI when creating an Auto Scaling Group` because when creating a launch template we must specify which AMI
+it should use to launch the instance. 
+
+AMI 
+
++ Dont specify the subnet when creating a template for an auto scaling group template this is because when you are creating your auto scaling group
+you will need to specify the availability zone and subnets at the time of creation.
+instance is in a public subnet : aws recognizes template based on the subnet 
+
+
+
+**HOW DOES AUTO SCALING WORK** 
+
++ Auto scaling monitors your instances. It continously monitor metrics from your ec2 instances or services.When this metric cross predefined thresholds . it triggers the scaling actions e.g cpu is over 80% it should create new instances . 
+
++ Scaling Actions : Scale up or down . When it scales up that means there is increase in demand , new instances are launched and traffic is routed to that instance and when scales down this means demand has decreased and it will go back to your desired state(number of instances you want at all time). 
+
++ Maintained desired capacity: Auto Scaling ensures that the number of running instances matches the desired capacity, even if some instances fail or become unhealthy. This capacity is defined in the Auto Scaling Group configuration
+
++ Health Management. Auto Scaling performs health checks on the instances in the Auto Scaling Group. If an instance is found to be unhealthy, it is terminated and replaced with a new one to maintain the desired capacity.
+
+
+
+**STEPS TO CREATE AN AUTO-SCALING GROUP**
+
+
+
+
+
+**AUTO SCALING POLICIES**
+
+Metrics : A metric is any quantitaive measure used to monitor and assess the performance , health and utilization resources .Metrics allows you to have insights into your infrastructure or application , allowing you to make informed decisions and take appropriate actions 
+
+Auto scaling policies : These are policies you can configured for your auto scaling group to determined when it needs to scale
+or not 
+
+1. **Dynamic scaling policies** : Dynamic scaling policies uses real time metrics to scale in aws and it gets the metrics from cloudwatch 
++ `Target Tracking scaling` : with this you will choose metric and set the target value so that your auto scaling will scale was the metric threshold is met (Average CPU ,average network in , average network out , Application loadbalancer request count per target)
++ `Step Scaling` : Adds or removes instances based on the size of the breach. You can define multiple steps with different scaling adjustments.
++ `Simple scaling` : Adds or removes a fixed number of instances based on a single scaling action.e.g cpu more than 80% you can choose how many instances it should add . 
+
+2. **Predictive scaling policies** : This allows you to auto scale based on anticipated changes in demand. It uses Machine learning algorithms to forecaset demand and automatically adjust the compute resources in antipication increase in demand. It uses Data Analysis ,Historical data , Forecasting , it adjust the resources and continue to learn about your infrastructure or application behaviours.
+
++ Predictive scaling policies are not meant to be used as standalone policies. AWS recommend that you use predictive scaling together with dynamic scaling policies.
+
+3. **Scheduled actions** : Scheduled Actions in AWS Auto Scaling allow you to automatically adjust the number of instances in your Auto Scaling group based on a defined schedule. This is particularly useful for predictable changes in demand that occur at regular intervals, such as daily or weekly patterns
+
+
+**Auto Scaling Cool Down Period**
+
+This is a concept or feature in Auto scaling that helps to delay or prevent your auto scaling group from launching or terminanting additional instances before the previous ones have completed initilization and stabilization . This is very important because it avoids scenarious where your auto scaling actions do not overlap and cause resource management issues or unintended scaling behaviours . 
+
+
+Network traffic load can be inconsistent ( 50 access application spike 60% auto scaling an ec2 10 drop 40% )
+
+
+
+If you were asked in an interview 
+
+How have you helped in cost optimization in the cloud in your current role 
+
++ Auto scaling groups 
++ EBS volume resizing 
++ Instance Type 
++ Purchasing option 
+
+
+
+RECAP 
+1. IAM - Identity and access management 
++ IAM Roles
++ IAM policies 
++ User Management 
++ User Groups 
++ IAM analyzers 
++ Identity providers 
++ Credential Reports 
++ MFA 
++ Password Policies 
+
+2. EC2 
+
++ AMI 
++ Purchasing Options 
++ Instance Types 
++ How to provisioned or instantiate and ec2 and how to login using (SSH , Session Manager , Instance Connect, Serial console )
++ EBS (ebs snapshots , lifecycle manager , encryption of ebs , scaling an ebs volume -vertical scaling , Migrate data using EBS and how to recover from disaster recovery, storage types , Recycle bin)
++ EFS 
++ Security Groups 
++ Key pairs 
++ Placement Groups 
++ User data 
++ ec2 adanced settings 
++ Load balancers ( Target groups , routing rules ,SSL/TLS )
++ Auto-scaling groups ( AMI , Launch templates )
+
+
+
+# ROUTE 53 
+
+What is Route 53 
+
+Route 53 is an AWS service that you use  to manage your DNS (Domain Name System) and you can use it for `DNS management , Traffic management ,domain registration , health checks and DNS security` . 
+
+
+**Features of Route 53** 
+
+1. `DNS management` : This allows you to perform DNS queries globally and manage domains
+2. `Traffic management` : It helps to set routing policies to route traffic to different endpoints based on different factors like endpoint health , geographical location , geo location , latency etc 
+3. `domain registration` : Register and manage a domains 
+4. `Health checks`: You can monitor the health checks of your endpoints and if its not healthy you can fail over to a healthy endpoint 
+5. `DNS security`: You can implement DNS based security policies such domain name system security extensions . 
+
+
+**Domain Names** : Human readable addresses used to identify and access resources over the internet e.g team4techsolutions.com ----> 102.304.5069
++ In route 53 we can register a new domain 
++ In route 53 we can transfer an existing domain name from another domain registrar like godaddy , namecheap etc 
++ In route 53 when you register your domain and its approved by default you will have a public hosted zones where you can now manage your DNS names .You can then create a Private hosted zone to manage DNS names for private us that is within your VPC 
+
+
+In a route 53 you can register your own domain e.g www.team4techsolutions.com . so AWS is considered a domain registrar because in route service  we can register domains . 
+
+`What is a Domain Registrar ?` 
+
+**Domain registrar** : is an organisation or company (e.g AWS , Godaddy , Namecheap) that is authorized to manage the registration of domain names.They act as an intermediary (middle man ) between the business ownwer or individual who wants to secure a specific domain and the domain name registry which maintains the database of domain names and their associated information. 
+
+
+`Lets Have a Closer Look of an Actual Domain`
+
+www. team4techsolutions. com
+       SLD               TLD 
+
+
+**Domain names have different classifications or Hierachy** 
+
+. means Root Domain 
+
+1. **Top-Level-Domains** (TLDs)  (General or generic ,country code ,sponspored Top Level Domians )
+
+We have different types of Top Level Domains.But when we talk about top level domain we are referring to the part of the domain name that ends with dot (.) e.g .com , .org .ca 
+
++ **Generic or General Top Level Domains** (gTLDs) : These are the most common top level domains and they include 
+(.com .org .net .info .biz ) these types of domains can be generally and they are not tied to any specific geographical region.
+
++ **Country Code Top Level Domains** (ccTLDs) :  These are top level domains that represents a specific country or territories and consist of two letters e.g (.ca .de .cm .jp .eu .uk ) team4techsolutions.ca ,team4techsolutions.uk 
+
++ **Sponsored Top Level Domains**(sTLDs): These are top level domains sponsored by specific organisations or communities and they often have specific eligibility requirements.e.g (.edu , .gov , .jobs .mil .corp)    universityoftoronto.edu
+
+
+2. **Second Level Domains** (SLD) : This is the part of the domain name that is located directly to the left of the top level domain. In other words the SLD is directly below the top level domain and is often used to identify the organization or individual entity e.g team4techsolutions.com is a domain name but team4techsolutions is the second level domain .
+
+3. **Sub Domains** :Anything left after the second level domain is the subdomain . In other words These are the extension of a domain name and its used to organized and categorize different sections or services within a domain e.g jenkins.team4techsolutionsinc.com
+
+jenkins.   team4techsolutionsinc.com
+subdomain   SLD                  TLD
+
+www.      team4techsolutionsinc. com 
+subdomain   SLD                  TLD
+
+www.team4techsolutionsinc.com   -----> Fully Qualified Domain 
+
+**Summary** 
+
+
+
++ Root Domain: .
++ Top-Level Domain: com
++ Second-Level Domain: team4techsolutions
++ Subdomains: www and jenkins or any other name before the SLD 
+
+
+
+
+**DNS Resolutions or DNS lookup** 
+
+`Interview Question` 
+
+What happens when i type `google.com or team4techsolutions.com` 
+
+
+When you type team4techsolutions.com a series of steps happens involving Domain Name System (DNS) (Route53) occurs to resolve the domain name into an ip address so that your browser can load the corresponding website 
+
+when you type team4techsolutions.com on your browser this is what we call `DNS Query`
+
+1. Local Cache Check : 
+
++ Browser cache : what happens is , your browser first checks its local cache to see if the ip address for team4techsolutions.com is there from any previous visit and if its not there it goes to check your 
+
++ Operating system cache it checks your computer (OS) cache now if it does not have any record of this cache (IP)
+
+2. It starts a DNS (Domain Name System ) Query (Request)  Initiation 
+
++ Internet Service Provider Domain Name Server ( rogers, bell etc )
+
+
+3. Starts DNS resolver process by checking the followings 
+
++ It Queries (checks) ROOT NAME SERVER  . The root servers knows where to find the names servers for the Top Level Domains e.g .com
++The root name server then forwards the query to the TLD NAME SERVER which this server now knows the the AUTHORITATIVE NAME SERVER and it then forwards the query to the 
+
++ AUTHORITATIVE NAME SERVER  e.g team4techsolutions.com .This sever holds the DNS records for team4techsolutions and it then reponds with the ip address associated with the domain . usually the authoritative servers are with your domain name registrar e.g AWSroute 53 
+
+4. It then reponds back to the customer query or dns request , the resolver receives the up address from the authoritatibe name server and then sends it back to your computer , your computer yjem caches the ip address for team4techsolutions so that in the future it can resolve faster. 
+
+
+Team4techsolutions.com
+app.team4techsolutions -------> 102.304.6070
+
+
+
+**ICAAN : Internet Corporation for Assigned Names and Numbers :**
+
+ICANN is a nonprofit organization responsible for coordinating the global domain name system (DNS) and IP address allocation. It oversees the management of top-level domains (TLDs) and ensures the stable and secure operation of the DNS.Head Quarter is in California USA , Los Angeles .website icann.org 
+
+`Functions` 
+
++ Acredits domains registrar 
++ It manages the root DNS zone (.)
++ They coordinate the allocation of ip address spaces
++ Oversees domain name policy development 
+
+
+
+**IANA : Internet Assigned Numbers Authority** : This is a branch or function within ICANN responsible global coordination of the DNS root , ip addressing and other protocol resources  and it administers Top level domains including country code TLD , generic top level domain 
+
+
+
+
+**DNS RECORDS IN ROUTE 53** 
+
+When you create a public hosted zone on route53 it automatically creates 2 important record types which are
+`NS (Name server) record  & SOA (start of Authority ) record.`
+
+1. **NS RECORDS (NAME SERVER RECORDS)*
+What is a NS record ? 
++ NS records tell the world which name servers are responsible for managing your DNS records of your domain 
++ Name servers are specialized to answer DNS queries , like "What is the IP address of google.com ? " 
+
+example of NS record type when you create a public hosted zone 
+
+ns-1641.awsdns-13.co.uk.
+ns-94.awsdns-11.com.
+ns-1137.awsdns-14.org.
+ns-965.awsdns-56.net.
+
+
+
+2. **SOA (START OF AUTHORITY RECORD)*
+
+What is an SOA record ? 
++ It contains important information about the domain and how DNS changes for the domain are managed 
++ It identifies the primary DNS server for the domain and includes administrative info like when the DNS was last updated and how dns records should check for updates 
+
+3. **A RECORD (ADDRESS RECORD)* 
++ A records routes traffic to IPV4 (123.456.4568) and some AWS resources (Load balancer , cloudfront distribution)  example of an ipv4 : 123.456.4568
++ Use case : good when you want to point your domain or sub-domain to specific server e.g EC2 that uses IPV4 address typically for websites 
+
+4. *AAAA RECORD* 
++ AAAA RECORD routes traffic to ipV6 (2607:fea8:a5de:1200:90f6:8fa6:ee81:aa7) and some AWS resources (alias to application loadbalancer , alias app runner , alias to cloud distribution)
+
++ USE CASE : similar with ipv4 but for websites or services that uses IPV6 instead of IPV4 
+
+5. *CNAME RECORD (Canonical Name Record)*
++ Routes traffic to another domain name or aws resources (alaising) 
++ USE CASE : it can be used when you want multiple domain names to point to a single service , or domain e.g www.app.team4techsolutions.com can point to team4techsolutions.com 
+
+
+6. MX RECORD (MAIL EXCHANGE RECORD): 
++ It specifies mail servers responsible for receiving emails on behalf of a domain 
++ USE CASE : It can be used when you want to configure email delivery for a domain for instance you set a configuration to direct email traffic for team4techsolutions.com to a mail server. 
+
+
+6. TXT RECORD 
++ Use to verify email senders and other values 
++ USE CASE : Its used to verify domain ownership , its also used for setting SPF (Sender policy framwork)
+for emails or it stores other validation or configuration data . 
+
+#######################################################
+
+
+7. PTR RECORD ( POINTER RECORD) : 
++ It maps an ip address to a domain name  (reverse dns lookup)
++ USE CASE : Its often used to verify the authenticity of servers especially for emails 
+
+8. SRV RECORD (SERVICE LOCATOR)
++ It defines the location (hostname and port) of a specific service within a domain
++ USE CASE: Commonly used for services like SIP (Session initiation protocol) and microsoft services that requires port to connect 
+
+9. SPF RECORD : (Sender PolicY Framework )
++ Its a type of TXT RECORD used to specify which mail servers are authorized or allowed to send email on behalf of the domain. SPF records help prevent email spoofing by verifying that the sender's IP matches the domain's authorized mail servers.
+
+10. NAPTR RECORD (Naming Authority Pointer Record ): 
+
++ A NAPTR record is used for regular expression-based rewriting of domain names, enabling dynamic redirection of services. It is often used in combination with SRV records and helps translate URNs (Uniform Resource Names) into URLs or IP addresses.
++ use case : VoIP and ENUM (Telephone Number Mapping) often use NAPTR records to dynamically resolve phone numbers or services into SIP addresses.
+
+11. CAA ( Certificates Authority Authorization)
+
++ A CAA record is used to specify which Certificate Authorities (CAs) are allowed to issue SSL/TLS certificates for your domain. This helps protect against unauthorized issuance of certificates.
+
+USE CASE : The CAA record helps prevent Bad Certificate Authorities from issuing unauthorized certificates for your domain, increasing security.
+
+12. DS RECORD (Delegation Signer Record)
++ A DS record is used in DNSSEC (DNS Security Extensions) to secure DNS queries. The DS record holds a hash of the DNSKEY (DNS Public Key) for a delegated zone. It helps verify that the DNS records haven’t been tampered with.
+
+USE CASE : DS records are used in conjunction with DNSSEC to provide cryptographic verification of DNS data, ensuring that the DNS records are genuine and have not been altered by an attacker.
+
+
+Questions ?
+
+**TIME TO LIVE (TTL)** 
+
+**TTL in Route53**  : Time To Live refers to the amount of time that a DNS resolver (like your browser dns cache or your ISP DNS server) should cache the DNS record before it checks back with the Authoritative DNS server (Route53) for an updated version of the record .In other words TTL defines how long a DNS response is valid 
+
++ Setting a High Time to Live (TTL) for example 24 hours means less traffic to your route 53 but this can lead to outdated information especially if the website or resource is dynamic 
+
++ Setting a low time to live (TTL) will lead to more traffic to your aws route53 which will show updated information to clients but can be costly 
+
+
+what is the difference between time to live (TTL ) and Sticky session 
+
++ TTL is how often users will query dns (route 53) to get new information whereas sticky session is how long the dns will resolve with a specific backend server (ec2) application 
+
+
+
+
+
+**ROUTING POLICIES IN ROUTE 53**
+
+Note this is not the type of load balancer routing . (routing rules for load balancers)
+
++ Route 53 offers this feature to help you to manage and control how DNS queries (request) are answered (routed) based on your specific needs.These policies determined how route53  its going to respond when a user request your domain resources (e.g webservers , database , or applications).The different routing policies are going to help us to manage traffic distribution , failover machanism , how it can improve latency ) 
+
+www.team4techsolutions.com ------> resource (web server (hosting website) , database , application , api)
+
+
+
+**TYPES OF ROUTING POLICIES IN ROUTE 53** 
+To demo routing polcies we have created 3 ec2 instances in 3 different regions , US-EAST-1 , CA-CENTRAL-1 AND EU-WEST-2 using the following user data by changing the regions 
+
+#!/bin/bash
+sudo su - 
+apt-get update -y
+apt-get install apache2 -y
+systemctl enable apache2
+systemctl start apache2
+echo "<html><h1>WELCOME TO TEAM4TECH SOLUTIONS INC FROM CA-CENTRAL-1 THIS IS CLASS-6 </h1></html>" > /var/www/html/index.html
+
+
+eu-west-2 : 18.171.171.56
+us-east-1 : 52.2.199.90
+ca-central-1 : 35.183.21.159
+
+
+
+1. **Simple routing Policy :** : 
+
++ This routes dns queries or traffic to a single resource such as webservers , amazon s3 , cloudfront distribution. 
++ Its a default routing policy when you are creating record sets in route 53 
++ we can specify multiple values (ip addresses) in the same record (a random value is going to be choosen by the client
++ You can also use an alais to route traffic to different endpoints e.g loadbalancer and use simple routing 
++ This routing policy can not be associated with route 53 health check 
+
+USE CASE : You can use it when you want dns queries to be routed to a single resource or EC2 instance . 
+
+
+2. **Weighted Routing**
++ This policy will send all dns queries or request or route the traffic based on assigned weights . You can distribute traffic across multiple resources in proportion of  weight 
++ It controls the percentage of traffic that goes to a single or a specific resource e.g ec2 instance 
++ Traffic % : Weight of a specific record 
+              ---------------------------
+              Sum of the weight of all records 
+
++ The weight does not really need to sum up to %100
++ The Record name (DNS name) must be same and the record type must be weighted 
++ Weighted Routing Policy can be associated with Health Checks 
++ When you assigned a weight of 0 (zero) route 53 stops sending any traffic to the resource ( ec2)
++ if you set the weight on all  records to 0 (zero) then all records will return equally 
+
+USE CASE : This is useful for testing new versions of your application (A/B testing) or when you want to gradually roll out changes .
+e.g You have release a new version of your application and you want to send 70 % of traffic to production environment and 30% of traffic to the new version .
+
+
+3. **Geo-location Routing policies :**
++ It routes traffic based on the geographical location of the user making the request .
++ You can specify a continent or a specific country 
++ You can associate health checks with geo-location routing policies
+
+USE CASE : This is good when companies want to rollout new versions of their application to specific group of people for test first . 
++ This also helps in serving content based on location for better perfomance 
+
+
+4. **Latency Routing Policy** 
+what is latency? : It refers to the time it takes for data to move or travel from its source (location) to (another) its destination and back .
++ When data moves faster from source to destination and back its considered low latency or on the other hand (good )
++ when data moves or travel slowly from source to destination and back its considered high latency . (bad)
++ When creating Latency routing policies  you need to specify where the resource is located or have been created within your aws account 
+
++ Latency routing policy routes traffic to resources that provides the lowest latency based on the geographical location of the user.
++ Route 53 measures latency between its DNS servers and your resources 
++ latency routing policies supports health checks 
+
+5. **Failover routing Policy :** 
++ This routing policy routes traffic to a specific resource under normal conditions . That is as long as the resource is healthy and available its going to route the traffic to it but if the resource becomes unavailable it will (failover)to the secondary resource you have configured .
++ Route 53 continously monitors health of the primary resource using health checks .
+
+USE CASE : This is good for high availability because of a backup resource in case something happens to the primary. 
+
+6. **Geo-proximity routing Policy**  : 
+This routes traffic based on the geographical location of the users and resources and it allows you to adjust traffic distribution based on a bias 
++ You can change the size of the coverage using Bias and a positive bias value that is anything 1+ can increase the size of coverage and anything -0 will shrink the size coverage 
+
+7. **Ip-based Routing Policy** : 
+It routes traffic based on the ip address of the user making the request . You can create rules that specify different resources based on the user ip addresses .
++ It supports heath checks 
+
+
+8. **Multi-value Answer Routing Policy** :
+It routes traffic to multiple resources and returns multiple values ( such as ip addresses ) for DNS query.The DNS resolver will return selected value of its choice . 
+
+Demo: Multi-Value
+      ip based 
+      failover routing 
+
+
+
+
+DNS Mamangement -----> Create sub domains
+Traffic Management ---> Routing policies , 
+Domain Registration ---> register a domain , you import an existing domain , create hosted zones 
+Health Checks -->
+DNS security -->
+
+**HEALTH CHECKS IN ROUTE 53** 
+
+
+Route 53 provides health checks to monitor the health and performance of your resources .Health checks helps route 53 
+to determined if a resource is available and perfoming normally , allowing users to use this information to setup failovers and routing polices based on the information. 
+
++ With route 53 health checks are Pulicly accessible, meaning they can monitor all types of Public Resources, but route 53 health checkers are outside the VPC  which makes it difficult for them to access private hosted zones but to go around this  you can create a cloud watch metrics associate a cloudwatch alarm , then creates a health check that checks the alarm itself . 
+
+
+
+
+**TYPES OF ENDPOINT HEALTH CHECKS WE CAN CREATE** 
+
+1. + **Endpoint Health Check ;*
+
+ In route 53 endpoint health check verifies the availability and responsiveness of your resources by sending a request to the specified endpoint .These checks can be HTTP , HTTPS , or TCP -based and it ensures your resources are operational and serving traffic correctly . 
+
+
+2. + **Calculated Health Checks (Status of other health checks)* : 
+
++ A calculated Health check, checks other health checks . It evaluates the health of a resources based on the results of other health checks or multiple health checks . 
++ You have the option to set when the parent health check can be deemed healthy . e.g if one out of the 3 or 4 health checks is healthy then the parent health is healthy and vice versa
++ You can use OR , AND , NOT conditions when setting this up 
++ You can monitor upto 256 Child Health Checks 
++ You can specify how many of the child health checks needs to pass before the parent pass 
+
+
+3. + **State of CloudWatch alarm Health Checks*: 
+This uses a cloudwatch alarm (Cloudwatch Is a monitoring tool in aws that monitors your resources within the aws ecosystem ) to determined the health of your resources . 
+
+
+
+
+9: 27 pm est 
 
 
 
